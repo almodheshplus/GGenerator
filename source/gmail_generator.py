@@ -12,7 +12,7 @@ import sys
 import time
 import random
 import string
-
+import urllib.parse
 # Printing funtion with 3 modes
 # 1 : Normal message
 # 2 : Information message
@@ -41,22 +41,21 @@ def open_firefox():
 
     # Printing basic message
     msg(1,'Opening Firefox...')
-
     # Location the start button
-    _start_button_=pyautogui.locateOnScreen('images/start_button.png')
-    _location_=pyautogui.center(_start_button_)
-
+    _firefox_icon_=pyautogui.locateOnScreen('images/firefox.png')
+    _location_=pyautogui.center(_firefox_icon_)
     # Clicking the start button
-    if not  pyautogui.click(_location_):
-        msg(1,'Opened start menu successfully!')
+    if not pyautogui.click(button='right', x=188, y=746):
+        msg(1,'Opening Firefox Private!')
     else:
         msg(3,'Failed to open start menu!')
-        ext()
+        ext()	
 
-    time.sleep(2)
+    time.sleep(1)
 
     # Search for Firefox in the menu search
-    pyautogui.typewrite('firefox')
+    #pyautogui.typewrite('firefox')
+    pyautogui.write(['up', 'up', 'up', 'up', 'up'])
     pyautogui.typewrite('\n')
     
     # Print message
@@ -67,37 +66,36 @@ def open_firefox():
 def locate_gmail():
     
     #Sleep for a while and wait for Firefox to open
-    time.sleep(3)
+    time.sleep(10)
 
     # Printing message
     msg(1,'Opening Gmail...')
 
     # Typing the website on the browser
-    pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('a'); pyautogui.keyUp('ctrlleft')
-    pyautogui.typewrite('https://accounts.google.com/SignUp?service=mail&continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&ltmpl=default')
+    #pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('a'); pyautogui.keyUp('ctrlleft')
+    pyautogui.typewrite(urllib.parse.quote('www.google.com'))
     pyautogui.typewrite('\n')
     
-    # Wait for a while until the website responds
+    # Wait Google responds
     time.sleep(6)
-
-    # Print a simple message
-    msg(1,'Locating the form...')
-
-    # Locate the form
-    pyautogui.press('tab')
- 
-    time.sleep(2)
-
-    _gmail_ = pyautogui.locateOnScreen('images/gmail_form.png')
-    formx, formy = pyautogui.center(_gmail_)
-    pyautogui.click(formx, formy)
     
-    # Check and print message
-    if not pyautogui.click(formx, formy):
-        msg(1,'Located the form.')
-    else:
-        msg(3,'Failed to locate the form.')
-        ext()
+    # Locate Login Button
+    _login_button_ = pyautogui.locateOnScreen('images/login_button.png')
+    lx, ly = pyautogui.center(_login_button_)
+    pyautogui.click(lx, ly)
+    
+    # Wait for a while until the website responds
+    time.sleep(10)
+    
+    # Locate Signup Button
+    pyautogui.press(['tab', 'tab', 'tab', 'tab'])
+    pyautogui.press('space')
+    time.sleep(1)
+    pyautogui.write(['up', 'up', 'up'])
+    pyautogui.typewrite('\n')
+    time.sleep(5)
+    msg(1,'Located the form.')    
+    time.sleep(1)
 
 
 # Function used to randomize credentials
@@ -128,7 +126,7 @@ def randomize(
         if _option_ == '-d':
             _generated_info_=random.randint(1,28)
         elif _option_ == '-y':
-            _generated_info_=random.randint(1950,2000)
+            _generated_info_=random.randint(1970,2004)
         else:
             _generated_info_=''
             for _counter_ in range(0,_length_) :
@@ -143,43 +141,69 @@ def randomize(
 
 # Function used to generate the credential information
 def generate_info():
-
-    # Print message
-    msg(1,'Generating credentials...')
-
+	
     # First and last name
-    _first_name_=randomize('-l',7)
+    _names_ = ['Ahmed', 'Hamed', 'Ismael', 'Abdelsalam', 'Naser', 'Malek', 'Joseph', 'Ahlawy', 'Nagah', 'Noor', 'Abdelasis', 'Mohammed', 'Mahmoud', 'Gaber', 'Saleh', 'Yousry', 'Younis', 'Reda', 'Fahmy', 'Hamy']
+    _first_name_=_names_[random.randint(0,len(_names_)-1)]
     pyautogui.typewrite(_first_name_)
     pyautogui.typewrite('\t')
-    _last_name_=randomize('-l',8)
+    _last_name_=_names_[random.randint(0,len(_names_)-1)]
     pyautogui.typewrite(_last_name_)
-    pyautogui.typewrite('\t')
+    pyautogui.press('enter')
+    time.sleep(4)
     msg(2,'\x1b[0;33;40mName:\x1b[0m %s %s' % (_first_name_,_last_name_))
+    
+    # Date of birth
+    _day_=randomize('-d',1)
+    _month_=random.randint(1,12)
+    _year_=randomize('-y',1)
+    pyautogui.typewrite('\t'+str(_day_))
+    pyautogui.typewrite('\t')
+    pyautogui.press('enter')
+    pyautogui.press('down', presses=_month_)
+    pyautogui.press('enter')
+    pyautogui.press('tab')
+    pyautogui.typewrite(str(_year_))
+    pyautogui.press('tab')
+    pyautogui.press('enter')
+    pyautogui.write(['down', 'down'])
+    pyautogui.press('enter')
+    pyautogui.press('tab')
+    pyautogui.press('enter')
+    time.sleep(7)
+    
+    msg(2,'\x1b[0;33;40mDate of birth:\x1b[0m %d/%s/%d' % (_day_,_month_,_year_))
 
     # Username
-    _username_=randomize('-l',10)
+    #_create_gmail_=pyautogui.locateOnScreen('images/create_gmail.png')
+    #_cglocation_=pyautogui.center(_create_gmail_)
+    #if not pyautogui.click(_cglocation_):
+    #    msg(1,'Creating Username')
+    #else:
+    #    msg(3,'Failed to open start menu!')
+    #    #ext()
+        
+    _username_=str(_first_name_.lower())+str(_last_name_.lower())+randomize('-n',6)
+    #pyautogui.press('tab')
+    #pyautogui.write(['down', 'down'])
     pyautogui.typewrite(_username_)
-    pyautogui.typewrite('\t')
+    pyautogui.press('tab')
+    pyautogui.press('enter')
     msg(2,'\x1b[0;33;40mUsername:\x1b[0m %s' % _username_)
+    time.sleep(4)
 
     # Password
-    _password_=randomize('-p',16)
-    pyautogui.typewrite(_password_+'\t'+_password_+'\t')
+    _password_=randomize('-p',10)
+    pyautogui.typewrite(_password_+'\t'+_password_+'\t\t')
+    pyautogui.press('enter')
     msg(2,'\x1b[0;33;40mPassword:\x1b[0m %s' % _password_)
 
-    # Date of birth
-    _month_=randomize('-m',1)
-    _day_=randomize('-d',1)
-    _year_=randomize('-y',1)
-    pyautogui.typewrite(_month_+'\t'+str(_day_)+'\t'+str(_year_)+'\t')
-    msg(2,'\x1b[0;33;40mDate of birth:\x1b[0m %s/%d/%d' % (_month_,_day_,_year_))
-
     # Gender (set to 'Rather not say')
-    pyautogui.typewrite('R\t')
-    msg(2,'\x1b[0;33;40mGender:\x1b[0m Rather not say')
+    #pyautogui.typewrite('R\t')
+    #msg(2,'\x1b[0;33;40mGender:\x1b[0m Rather not say')
 
     # Skip the rest
-    pyautogui.typewrite('\t\t\t\t\n')
+    #pyautogui.typewrite('\t\t\t\t\n')
 
 # Main function
 if __name__=='__main__':
